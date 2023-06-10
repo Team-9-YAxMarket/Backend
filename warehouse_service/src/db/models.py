@@ -1,8 +1,7 @@
 import uuid
-from datetime import datetime
-
+from sqlalchemy import Column, Numeric
 from sqlalchemy import ForeignKey
-from sqlalchemy.dialects.postgresql import BYTEA, TEXT, UUID
+from sqlalchemy.dialects.postgresql import TEXT, UUID,INT
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -17,31 +16,43 @@ class Base(DeclarativeBase):
         return f"{self.__class__.__name__}(id={self.id})"
 
 
-class User(Base):
-    __tablename__ = "users"
+class SKU(Base):
+    __tablename__ = "sku_ware"
 
-    username: Mapped[str] = mapped_column(TEXT)
+    sku: Mapped[TEXT]
+    length: Column(Numeric(precision=5, scale=1))
+    width: Column(Numeric(precision=5, scale=1))
+    height: Column(Numeric(precision=5, scale=1))
+    weight: Column(Numeric(precision=5, scale=1))
+    barcode: Mapped[TEXT]
 
-    def __repr__(self):
-        return (
-            f"{self.__class__.__name__}"
-            f"(id={self.id}, username={self.username})"
-        )
+    sku_cargotypes = relationship("SkuCargotype", back_populates="sku")
 
 
-class Session(Base):
-    __tablename__ = "sessions"
+class Cargotype(Base):
+    __tablename__ = "cargotype_ware"
+    cargotype: Mapped[INT]
+    description: Mapped[TEXT]
 
-    start_at: Mapped[datetime] = mapped_column(
-        default=datetime.utcnow(),
-        nullable=False,
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        default=datetime.utcnow(),
-        onupdate=datetime.utcnow(),
-        nullable=False,
-    )
-    end_at: Mapped[datetime] = mapped_column(
-        nullable=True,
-    )
-    ...
+    sku_cargotypes = relationship("SkuCargotype", back_populates="cargotype")
+
+
+class Carton(Base):
+    __tablename__ = "carton_ware"
+
+    carton_type: Mapped[TEXT]
+    length: Column(Numeric(precision=5, scale=1))
+    width: Column(Numeric(precision=5, scale=1))
+    height: Column(Numeric(precision=5, scale=1))
+    barcode: Mapped[TEXT]
+
+
+class SkuCargotype(Base):
+    __tablename__ = "sku_cargo"
+    sku_id: Mapped[UUID] = mapped_column(ForeignKey("sku_ware.id"))
+    cartontype_id: Mapped[UUID] = mapped_column(ForeignKey("cargotype_ware.id"))
+
+    sku = relationship("SKU", back_populates="sku_cargotypes")
+    cargotype = relationship("Cargotype", back_populates="sku_cargotypes")
+
+
