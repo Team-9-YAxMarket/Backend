@@ -1,9 +1,9 @@
 import enum
 import uuid
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import Column, ForeignKey, Table
 from sqlalchemy.dialects.postgresql import TEXT, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -16,50 +16,88 @@ class Base(DeclarativeBase):
     )
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(id={self.id})"
+        def add_quotes(value: Any):
+            """Add quotes to strings."""
+            if isinstance(value, str):
+                return f'"{value}"'
+            if isinstance(value, list):
+                return [add_quotes(i) for i in value]
+            if isinstance(value, dict):
+                return {add_quotes(k): add_quotes(v) for k, v in value.items()}
+            return value
+
+        mandatory_columns = [
+            c.name
+            for c in self.__class__.__table__.columns
+            if c.primary_key or not c.nullable
+        ]
+        mandatory_columns.sort()
+
+        return "{}({})".format(
+            self.__class__.__name__,
+            ", ".join(
+                [
+                    "{}={}".format(c, add_quotes(getattr(self, c)))
+                    for c in mandatory_columns
+                ]
+            ),
+        )
 
 
 class SKU(Base):
     __tablename__ = "skus"
 
-    sku: Mapped[TEXT]
-    barcode: Mapped[TEXT]
-
-
-class Carton(Base):
-    __tablename__ = "cartons"
-
-    carton_type: Mapped[TEXT]
-    barcode: Mapped[TEXT]
+    sku: Mapped[str] = mapped_column(TEXT, nullable=False)
+    barcode: Mapped[str] = mapped_column(TEXT, nullable=False)
 
 
 class Prompt(Base):
     __tablename__ = "prompts"
 
-    prompt: Mapped[TEXT]
+    prompt: Mapped[str] = mapped_column(TEXT, nullable=False)
+
+
+class Carton(Base):
+    __tablename__ = "cartons"
+
+    carton_type: Mapped[str] = mapped_column(TEXT, nullable=False)
+    barcode: Mapped[str] = mapped_column(TEXT, nullable=False)
+
+
+class ItemPrompt(Base):
+    """Item and Prompt association table."""
+
+    __tablename__ = "item_prompt"
+
+    item: Mapped[UUID] = mapped_column(
+        ForeignKey("items.id"), primary_key=True
+    )
+    prompt: Mapped[UUID] = mapped_column(
+        ForeignKey("prompts.id"), primary_key=True
+    )
 
 
 class Item(Base):
     class Status(str, enum.Enum):
-        """Статус сессии."""
+        """Статус элемента заказа."""
 
         ADDED = "added"
         SCANNED = "scanned"
-        FAULTY = "faulty"
+        FAULT = "fault"
         ABSENT = "absent"
 
     __tablename__ = "items"
 
     status: Mapped[Status]
     sku_id: Mapped[UUID] = mapped_column(ForeignKey("skus.id"))
-    sku: Mapped["SKU"] = relationship()
-    prompts: Mapped[Optional[List["Prompt"]]]
+    sku: Mapped[SKU] = relationship()
+    prompts: Mapped[Optional[List[ItemPrompt]]] = relationship()
     # recommended_carton: Mapped
 
 
 class Order(Base):
     class Status(str, enum.Enum):
-        """Статус сессии."""
+        """Статус заказа."""
 
         IS_FORMING = "is_forming"
         IS_COLLECTING = "is_collecting"
