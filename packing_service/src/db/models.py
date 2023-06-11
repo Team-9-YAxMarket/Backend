@@ -3,8 +3,8 @@ import uuid
 from datetime import datetime
 from typing import Any, List, Optional
 
-from sqlalchemy import Column, ForeignKey, Table
-from sqlalchemy.dialects.postgresql import TEXT, UUID
+import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import TEXT, UUID, ENUM
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -31,7 +31,6 @@ class Base(DeclarativeBase):
             for c in self.__class__.__table__.columns
             if c.primary_key or not c.nullable
         ]
-        mandatory_columns.sort()
 
         return "{}({})".format(
             self.__class__.__name__,
@@ -69,16 +68,17 @@ class ItemPrompt(Base):
 
     __tablename__ = "item_prompt"
 
-    item: Mapped[UUID] = mapped_column(
-        ForeignKey("items.id"), primary_key=True
+    item_id: Mapped[UUID] = mapped_column(
+        sa.ForeignKey("items.id"), primary_key=True
     )
-    prompt: Mapped[UUID] = mapped_column(
-        ForeignKey("prompts.id"), primary_key=True
+    prompt_id: Mapped[UUID] = mapped_column(
+        sa.ForeignKey("prompts.id"), primary_key=True
     )
+    prompt: Mapped[Prompt] = relationship()
 
 
 class Item(Base):
-    class Status(str, enum.Enum):
+    class ItemStatus(str, enum.Enum):
         """Статус элемента заказа."""
 
         ADDED = "added"
@@ -88,15 +88,44 @@ class Item(Base):
 
     __tablename__ = "items"
 
-    status: Mapped[Status]
-    sku_id: Mapped[UUID] = mapped_column(ForeignKey("skus.id"))
+    status: Mapped[ItemStatus] = mapped_column(
+        ENUM(ItemStatus, name="item_status"), default=ItemStatus.ADDED
+    )
+    sku_id: Mapped[UUID] = mapped_column(sa.ForeignKey("skus.id"))
     sku: Mapped[SKU] = relationship()
     prompts: Mapped[Optional[List[ItemPrompt]]] = relationship()
-    # recommended_carton: Mapped
+
+
+class RecommendedCarton(Base):
+    """Recommended carton (Order and Carton) association table."""
+
+    __tablename__ = "recommended_carton"
+
+    order_id: Mapped[UUID] = mapped_column(
+        sa.ForeignKey("orders.id"), primary_key=True
+    )
+    carton_id: Mapped[UUID] = mapped_column(
+        sa.ForeignKey("cartons.id"), primary_key=True
+    )
+    carton: Mapped[Carton] = relationship()
+
+
+class SelectedCarton(Base):
+    """Recommended carton (Order and Carton) association table."""
+
+    __tablename__ = "selected_carton"
+
+    order_id: Mapped[UUID] = mapped_column(
+        sa.ForeignKey("orders.id"), primary_key=True
+    )
+    carton_id: Mapped[UUID] = mapped_column(
+        sa.ForeignKey("cartons.id"), primary_key=True
+    )
+    carton: Mapped[Carton] = relationship()
 
 
 class Order(Base):
-    class Status(str, enum.Enum):
+    class OrderStatus(str, enum.Enum):
         """Статус заказа."""
 
         IS_FORMING = "is_forming"
@@ -105,18 +134,17 @@ class Order(Base):
 
     __tablename__ = "orders"
 
-    status: Mapped[Status]
-    session_id: Mapped[Optional[UUID]] = mapped_column(
-        ForeignKey("sessions.id")
+    status: Mapped[OrderStatus] = mapped_column(
+        ENUM(OrderStatus, name="order_status"), default=OrderStatus.IS_FORMING
     )
-    session: Mapped[Optional["Session"]] = relationship(back_populates="order")
-    # items: Mapped
-    # recommended_carton: Mapped
-    # selected_carton: Mapped
+    item_id: Mapped[UUID] = mapped_column(sa.ForeignKey("items.id"))
+    items: Mapped[Item] = relationship()
+    recommended_carton: Mapped[Optional[RecommendedCarton]] = relationship()
+    selected_carton: Mapped[Optional[SelectedCarton]] = relationship()
 
 
 class Session(Base):
-    class Status(str, enum.Enum):
+    class SessionStatus(str, enum.Enum):
         """Статус сессии."""
 
         OPENED = "started"
@@ -136,5 +164,9 @@ class Session(Base):
     )
     end_at: Mapped[datetime] = mapped_column(nullable=True)
     user_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
-    status: Mapped[Status]
-    order: Mapped[Order] = relationship(back_populates="session")
+    status: Mapped[SessionStatus] = mapped_column(
+        ENUM(SessionStatus, name="session_status"),
+        default=SessionStatus.OPENED,
+    )
+    order_id: Mapped[UUID] = mapped_column(sa.ForeignKey("orders.id"))
+    order: Mapped[Order] = relationship()

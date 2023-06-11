@@ -5,16 +5,15 @@ from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
 
 from src.api.response_models.user_response import UserResponse
-
-# from src.core.tools import generate_error_responses
-from src.services.user_service import UserService
+from src.core.tools import generate_error_responses
+from src.services.session_service import SessionService
 
 router = APIRouter(prefix="/user", tags=["User"])
 
 
 @cbv(router)
 class UserCBV:
-    __user_service: UserService = Depends()
+    __session_service: SessionService = Depends()
 
     @router.get(
         "/",
@@ -23,7 +22,7 @@ class UserCBV:
         status_code=HTTPStatus.OK,
         summary="Create new user",
         response_description=HTTPStatus.OK.phrase,
-        # responses=generate_error_responses(HTTPStatus.BAD_REQUEST),
+        responses=generate_error_responses(HTTPStatus.BAD_REQUEST),
     )
     async def add_user(self) -> Any:
-        return await self.__user_service.list_all_users()
+        return await self.__session_service.list_all_sessions()
