@@ -1,6 +1,9 @@
 from functools import cache
+from pathlib import Path
 
 from pydantic import BaseSettings
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 class Settings(BaseSettings):
