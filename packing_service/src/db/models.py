@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, List, Optional
 
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import TEXT, UUID, ENUM
+from sqlalchemy.dialects.postgresql import ENUM, TEXT, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -48,6 +48,9 @@ class SKU(Base):
 
     sku: Mapped[str] = mapped_column(TEXT, nullable=False)
     barcode: Mapped[str] = mapped_column(TEXT, nullable=False)
+    img: Mapped[str]
+
+    __table_args__ = (sa.UniqueConstraint(sku, name="uc_sku"),)
 
 
 class Prompt(Base):
@@ -55,12 +58,16 @@ class Prompt(Base):
 
     prompt: Mapped[str] = mapped_column(TEXT, nullable=False)
 
+    __table_args__ = (sa.UniqueConstraint(prompt, name="uc_prompt"),)
+
 
 class Carton(Base):
     __tablename__ = "cartons"
 
     carton_type: Mapped[str] = mapped_column(TEXT, nullable=False)
     barcode: Mapped[str] = mapped_column(TEXT, nullable=False)
+
+    __table_args__ = (sa.UniqueConstraint(carton_type, name="uc_carton_type"),)
 
 
 class ItemPrompt(Base):
@@ -91,9 +98,19 @@ class Item(Base):
     status: Mapped[ItemStatus] = mapped_column(
         ENUM(ItemStatus, name="item_status"), default=ItemStatus.ADDED
     )
-    sku_id: Mapped[UUID] = mapped_column(sa.ForeignKey("skus.id"))
+    sku_id: Mapped[UUID] = mapped_column(
+        sa.ForeignKey("skus.id", ondelete="SET NULL")
+    )
     sku: Mapped[SKU] = relationship()
+    count: Mapped[int]
     prompts: Mapped[Optional[List[ItemPrompt]]] = relationship()
+    box_id: Mapped[Optional[UUID]] = mapped_column(UUID(as_uuid=True))
+    order_id: Mapped[UUID] = mapped_column(sa.ForeignKey("orders.id"))
+    order: Mapped["Order"] = relationship(back_populates="items")
+
+    __table_args__ = (
+        sa.CheckConstraint("count > 0", name="check_count_positive"),
+    )
 
 
 class RecommendedCarton(Base):
@@ -108,6 +125,7 @@ class RecommendedCarton(Base):
         sa.ForeignKey("cartons.id"), primary_key=True
     )
     carton: Mapped[Carton] = relationship()
+    box_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
 
 
 class SelectedCarton(Base):
@@ -137,8 +155,9 @@ class Order(Base):
     status: Mapped[OrderStatus] = mapped_column(
         ENUM(OrderStatus, name="order_status"), default=OrderStatus.IS_FORMING
     )
-    item_id: Mapped[UUID] = mapped_column(sa.ForeignKey("items.id"))
-    items: Mapped[Item] = relationship()
+    items: Mapped[List[Item]] = relationship(
+        back_populates="order", cascade="all, delete-orphan"
+    )
     recommended_carton: Mapped[Optional[RecommendedCarton]] = relationship()
     selected_carton: Mapped[Optional[SelectedCarton]] = relationship()
 
@@ -147,7 +166,7 @@ class Session(Base):
     class SessionStatus(str, enum.Enum):
         """Статус сессии."""
 
-        OPENED = "started"
+        OPENED = "opened"
         CLOSED_SUCCESS = "closed_success"
         CLOSED_PROBLEM = "closed_problem"
 
@@ -168,5 +187,7 @@ class Session(Base):
         ENUM(SessionStatus, name="session_status"),
         default=SessionStatus.OPENED,
     )
-    order_id: Mapped[UUID] = mapped_column(sa.ForeignKey("orders.id"))
+    order_id: Mapped[UUID] = mapped_column(
+        sa.ForeignKey("orders.id", ondelete="SET NULL")
+    )
     order: Mapped[Order] = relationship()
