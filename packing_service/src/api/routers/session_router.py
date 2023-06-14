@@ -13,7 +13,7 @@ router = APIRouter(prefix="/user", tags=["User"])
 
 @cbv(router)
 class UserCBV:
-    __session_service: SessionService = Depends()
+    _session_service: SessionService = Depends()
 
     @router.get(
         "/",
@@ -25,4 +25,4 @@ class UserCBV:
         responses=generate_error_responses(HTTPStatus.BAD_REQUEST),
     )
     async def add_user(self) -> Any:
-        return await self.__session_service.list_all_sessions()
+        return await self._session_service.list_all_sessions()
