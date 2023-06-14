@@ -17,9 +17,9 @@ class PromptService:
     async def list_all_prompt(self) -> List[Prompt]:
         return await self._prompt_repository.get_all()
 
-    async def create_or_get_prompt(self, schema: PromptRequest) -> Prompt:
-        prompt = await self._prompt_repository.get_prompt_by_name_or_none(
-            schema.prompt
-        ) or await self._prompt_repository.create(Prompt(**schema.dict()))
+    async def create_or_get_prompt(self, prompt: str) -> Prompt:
+        prompt_obj = await self._prompt_repository.get_prompt_by_name_or_none(
+            prompt
+        ) or await self._prompt_repository.create(Prompt(prompt=prompt))
 
-        return prompt
+        return prompt_obj

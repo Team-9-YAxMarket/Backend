@@ -40,6 +40,8 @@ def upgrade() -> None:
     )
     op.create_table(
         "orders",
+        sa.Column("create_at", sa.DateTime(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.Column("status", ORDER_STATUS, nullable=False),
         sa.Column("id", sa.UUID(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
@@ -66,7 +68,7 @@ def upgrade() -> None:
         sa.Column("sku_id", sa.UUID(), nullable=False),
         sa.Column("count", sa.Integer(), nullable=False),
         sa.Column("box_id", sa.UUID(), nullable=True),
-        sa.Column("order_id", sa.UUID(), nullable=False),
+        sa.Column("order_id", sa.UUID(), nullable=True),
         sa.Column("id", sa.UUID(), nullable=False),
         sa.CheckConstraint("count > 0", name="check_count_positive"),
         sa.ForeignKeyConstraint(
@@ -109,7 +111,7 @@ def upgrade() -> None:
     )
     op.create_table(
         "sessions",
-        sa.Column("start_at", sa.DateTime(), nullable=False),
+        sa.Column("create_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.Column("end_at", sa.DateTime(), nullable=True),
         sa.Column("user_id", sa.UUID(), nullable=False),

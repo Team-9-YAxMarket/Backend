@@ -37,4 +37,4 @@ class UserCBV:
         responses=generate_error_responses(HTTPStatus.BAD_REQUEST),
     )
     async def create_prompt(self, prompt: PromptRequest) -> PromptResponse:
-        return await self._prompt_service.create_or_get_prompt(prompt)
+        return await self._prompt_service.create_or_get_prompt(prompt.prompt)

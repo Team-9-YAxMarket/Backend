@@ -105,7 +105,9 @@ class Item(Base):
     count: Mapped[int]
     prompts: Mapped[Optional[List[ItemPrompt]]] = relationship()
     box_id: Mapped[Optional[UUID]] = mapped_column(UUID(as_uuid=True))
-    order_id: Mapped[UUID] = mapped_column(sa.ForeignKey("orders.id"))
+    order_id: Mapped[Optional[UUID]] = mapped_column(
+        sa.ForeignKey("orders.id")
+    )
     order: Mapped["Order"] = relationship(back_populates="items")
 
     __table_args__ = (
@@ -152,6 +154,15 @@ class Order(Base):
 
     __tablename__ = "orders"
 
+    create_at: Mapped[datetime] = mapped_column(
+        default=datetime.utcnow(),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        default=datetime.utcnow(),
+        onupdate=datetime.utcnow(),
+        nullable=False,
+    )
     status: Mapped[OrderStatus] = mapped_column(
         ENUM(OrderStatus, name="order_status"), default=OrderStatus.IS_FORMING
     )
@@ -172,7 +183,7 @@ class Session(Base):
 
     __tablename__ = "sessions"
 
-    start_at: Mapped[datetime] = mapped_column(
+    create_at: Mapped[datetime] = mapped_column(
         default=datetime.utcnow(),
         nullable=False,
     )

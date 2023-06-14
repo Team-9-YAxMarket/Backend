@@ -21,9 +21,10 @@ class AbstractRepository(abc.ABC):
         self._session.add(instance)
         try:
             await self._session.commit()
-        except IntegrityError:
+        except IntegrityError as exc:
             await self._session.rollback()
-            raise exceptions.ObjectAlreadyExistsError(instance)
+            raise exc
+            # raise exceptions.ObjectAlreadyExistsError(instance)
 
         return instance
 
