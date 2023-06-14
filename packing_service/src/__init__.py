@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from src.api.routers import session_router, carton_router, prompt_router
+from src.api.routers import carton_router, prompt_router, session_router
 from src.core.settings import settings
 
 

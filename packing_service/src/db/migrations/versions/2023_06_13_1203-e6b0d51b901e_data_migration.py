@@ -5,11 +5,11 @@ Revises: e90ced86cc0a
 Create Date: 2023-06-13 12:03:20.573973
 
 """
-from alembic import op
-import sqlalchemy as sa
-
 import csv
 from pathlib import Path
+
+from alembic import op
+
 from src.core.settings import BASE_DIR
 from src.db.models import SKU, Carton, Prompt
 

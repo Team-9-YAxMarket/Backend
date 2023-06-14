@@ -1,10 +1,6 @@
-from uuid import UUID
-
 from fastapi import Depends
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core import exceptions
 from src.db.db import get_session
 from src.db.models import Carton
 from src.repository.abstract_repository import AbstractRepository

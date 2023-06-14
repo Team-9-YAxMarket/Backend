@@ -1,13 +1,12 @@
 from http import HTTPStatus
-from typing import Any, List
-from uuid import UUID
+from typing import List
 
 from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
 
-from src.core.tools import generate_error_responses
-from src.api.response_models.prompt_response import PromptResponse
 from src.api.request_models.prompt_request import PromptRequest
+from src.api.response_models.prompt_response import PromptResponse
+from src.core.tools import generate_error_responses
 from src.services.prompt_service import PromptService
 
 router = APIRouter(prefix="/prompt", tags=["Prompt"])
@@ -33,7 +32,7 @@ class UserCBV:
         response_model=PromptResponse,
         response_model_exclude_none=True,
         status_code=HTTPStatus.OK,
-        summary="Get Prompt list",
+        summary="Create prompt",
         response_description=HTTPStatus.OK.phrase,
         responses=generate_error_responses(HTTPStatus.BAD_REQUEST),
     )

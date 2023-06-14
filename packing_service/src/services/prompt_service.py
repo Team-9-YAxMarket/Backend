@@ -2,9 +2,9 @@ from typing import List
 
 from fastapi import Depends
 
+from src.api.request_models.prompt_request import PromptRequest
 from src.db.models import Prompt
 from src.repository.prompt_repository import PromptRepository
-from src.api.request_models.prompt_request import PromptRequest
 
 
 class PromptService:
