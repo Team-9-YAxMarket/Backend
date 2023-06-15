@@ -1,8 +1,5 @@
-from pydantic import BaseModel, Extra
-from decimal import Decimal
-from uuid import UUID
 from typing import List
-from pydantic import BaseModel, Extra, Field, NonNegativeInt, condecimal
+from pydantic import BaseModel, Extra, PositiveInt
 
 
 class RequestBase(BaseModel):
@@ -16,10 +13,16 @@ class RequestBase(BaseModel):
 
 class SKURequest(RequestBase):
     sku: str
-    count: int
 
 
 class SKUItemsRequest(RequestBase):
     items: List[SKURequest]
 
 
+class SKURequestStatus(RequestBase):
+    sku: str
+    count: PositiveInt
+
+
+class SKUItemsRequestStatus(RequestBase):
+    items: List[SKURequestStatus]

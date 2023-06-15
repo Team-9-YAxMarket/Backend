@@ -1,25 +1,23 @@
-from typing import Any
-
+from fastapi import Depends
 from sqlalchemy import select
-
+from sqlalchemy.ext.asyncio import AsyncSession
 from src.repository.abstract_repository import AbstractRepository
 
 from src.db.models import SKU
 
+from src.db.db import get_session
+
 
 class SKURepository(AbstractRepository):
     """Репозиторий для работы с моделью SKU."""
-    async def get_cargotypes(self, req_sku: str, req_count: int):
-        """Возвращает все объекты модели из базы данных."""
 
-        statement = select(SKU).filter(SKU.sku == req_sku, SKU.in_stock >= req_count)
-        sku = await self._session.execute(statement)
-        if not sku:
-            return []
+    def __init__(self, session: AsyncSession = Depends(get_session)) -> None:
+        super().__init__(session, SKU)
 
-        cargotypes = await self._sku_cargo_repository.get_cargotypes_for_sku(SKU.sku)
+    async def get_sku_count(self, sku: str):
+        """Проверяет наличие SKU на складе."""
 
-        # Дальнейшая обработка и возврат данных
+        statement = select(SKU.count).filter(SKU.sku == sku)
+        sku_available = await self._session.execute(statement)
 
-        return cargotypes
-
+        return sku_available.scalars().first() or 0

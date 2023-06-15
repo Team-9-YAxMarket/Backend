@@ -20,8 +20,7 @@ class SKUCargotypeRepository(AbstractRepository):
             .join(sku_cargotype_table)
             .where(sku_cargotype_table.c.sku == sku)
         )
-        cargotypes = [cargotype.cargotype for cargotype in
-                      sku_cargotypes.scalars().all()]
+        cargotypes = [
+            cargotype.cargotype for cargotype in sku_cargotypes.scalars().all()
+        ]
         return cargotypes
-
-

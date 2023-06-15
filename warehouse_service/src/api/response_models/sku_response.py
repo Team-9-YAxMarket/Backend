@@ -1,17 +1,37 @@
 from typing import List
 
-from pydantic import BaseModel
-
-from src.api.response_models.cargotype_response import CargotypeResponse
+from pydantic import BaseModel, PositiveInt
 
 
-class SKUResponse(BaseModel):
+class SKUResponseCount(BaseModel):
     sku: str
-    cargotype: List[int]
+    count: PositiveInt
 
     class Config:
         orm_mode = True
 
 
-class SKUResponseDeny(BaseModel):
+class SKUResponse(BaseModel):
+    status: str
+
+    class Config:
+        orm_mode = True
+
+
+class SKUResponseItem(BaseModel):
+    sku: str
+    cargotypes: List[str]
+
+    class Config:
+        orm_mode = True
+
+
+class SKUResponseItems(BaseModel):
+    items: List[SKUResponseItem]
+
+    class Config:
+        orm_mode = True
+
+
+class SKUResponseStatus(BaseModel):
     status: str

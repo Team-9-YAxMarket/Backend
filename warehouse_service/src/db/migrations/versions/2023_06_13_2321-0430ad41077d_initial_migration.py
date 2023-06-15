@@ -61,7 +61,7 @@ def upgrade() -> None:
                                             nullable=True),
                                   sa.Column('barcode', sa.Text(),
                                             nullable=True),
-                                  sa.Column('in_stock', sa.Integer(),
+                                  sa.Column('count', sa.Integer(),
                                             nullable=True),
                                   sa.Column('id', sa.UUID(), primary_key=True),
                                   sa.PrimaryKeyConstraint('id')
@@ -77,7 +77,7 @@ def upgrade() -> None:
                 'width': float(row['WIDTH']),
                 'height': float(row['HEIGHT']),
                 'barcode': row['BARCODE'],
-                'in_stock': int(row['DISPLAYRFPACK']),
+                'count': int(row['DISPLAYRFPACK']),
                 'id': uuid.uuid4() if 'id' not in row else uuid.UUID(
                     row['id'])
             }
@@ -99,7 +99,7 @@ def upgrade() -> None:
                                sa.Column('weight',
                                          sa.Numeric(precision=5, scale=1),
                                          nullable=True),
-                               sa.Column('in_stock', sa.Integer(),
+                               sa.Column('count', sa.Integer(),
                                          nullable=True),
                                sa.Column('barcode', sa.Text(), nullable=True),
                                sa.Column('id', sa.UUID(), primary_key=True),
@@ -117,7 +117,7 @@ def upgrade() -> None:
                 'width': float(row['b']),
                 'height': float(row['c']),
                 'weight': float(row['weight']),
-                'in_stock': int(row['in_stock']),
+                'count': int(row['in_stock']),
                 'barcode': row['barcode'],
                 'id': uuid.uuid4() if 'id' not in row else uuid.UUID(
                     row['id'])

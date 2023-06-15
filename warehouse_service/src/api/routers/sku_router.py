@@ -1,22 +1,23 @@
 from http import HTTPStatus
-from typing import Any, List, Union
-from uuid import UUID
+from typing import Optional
 
-from fastapi import APIRouter, Depends , Request
+from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
-from sqlalchemy import column, select, table
+from pydantic.types import PositiveInt
 
-from src.api.response_models.sku_response import SKUResponse
-from src.db.db import get_session
-from src.db.models import SKU
+from src.api.response_models.sku_response import SKUResponse, SKUResponseStatus
 
-from src.api.response_models.sku_response import SKUResponseDeny
-
-from src.api.request_models.request_base import SKUItemsRequest, SKURequest
-
-# from src.repository.sku_repository import SKURepository
+from src.api.request_models.request_base import (
+    SKUItemsRequest,
+    SKURequest,
+    SKUItemsRequestStatus,
+)
 
 from src.services.sku_service import SKUService
+
+from src.api.response_models.sku_response import SKUResponseItems
+
+from src.api.response_models.sku_response import SKUResponseCount
 
 router_sku = APIRouter(prefix="/check_skus", tags=["SKU"])
 
@@ -25,25 +26,41 @@ router_sku = APIRouter(prefix="/check_skus", tags=["SKU"])
 class SKUCBV:
     __sku_service: SKUService = Depends()
 
-    @router_sku.post(
+    @router_sku.get(
         "/",
-        response_model=SKUResponse,
+        response_model=SKUResponseCount,
         response_model_exclude_none=True,
         status_code=HTTPStatus.OK,
         summary="Checking presence of SKUs",
         response_description=HTTPStatus.OK.phrase,
     )
-    async def check_skus(self, request: Request):
-        data = await request.json()
-        items = SKUItemsRequest(**data)
-        response = []
-        for item in items:
-            _, req_item = item
-            response_dict = {}
-            # order_item = SKURequest(**req_item)
-            cargotypes = await self.__sku_service.cargotypes(req_item.sku, req_item.count)
-            response_dict['sku'] = req_item.sku
-            response_dict['cargotypes'] = cargotypes
-            response.append(response_dict)
-        return response
+    async def check_skus(
+        self, sku: str, count: PositiveInt
+    ) -> Optional[SKUResponseCount]:
+        return await self.__sku_service.skus(sku, count)
 
+    @router_sku.post(
+        "/",
+        response_model=SKUResponseItems,
+        response_model_exclude_none=True,
+        status_code=HTTPStatus.OK,
+        summary="Checking presence of SKUs",
+        response_description=HTTPStatus.OK.phrase,
+    )
+    async def check_all_skus(
+        self, request: SKUItemsRequest
+    ) -> Optional[SKUResponseItems]:
+        return await self.__sku_service.all_skus(request)
+
+    @router_sku.post(
+        "/status/",
+        response_model=SKUResponseStatus,
+        response_model_exclude_none=True,
+        status_code=HTTPStatus.OK,
+        summary="Checking presence of SKUs",
+        response_description=HTTPStatus.OK.phrase,
+    )
+    async def check_all_skus_status(
+        self, request: SKUItemsRequestStatus
+    ) -> Optional[SKUResponseStatus]:
+        return await self.__sku_service.all_skus_status(request)

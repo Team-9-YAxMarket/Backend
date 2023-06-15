@@ -16,8 +16,14 @@ sku_cargotype_table = Table(
     "sku_cargotype",
     Base.metadata,
     Column("sku", Text, ForeignKey("sku_ware.sku"), primary_key=True),
-    Column("cargotype", Integer, ForeignKey("cargotype_ware.cargotype"), primary_key=True),
+    Column(
+        "cargotype",
+        Integer,
+        ForeignKey("cargotype_ware.cargotype"),
+        primary_key=True,
+    ),
 )
+
 
 class SKU(Base):
     __tablename__ = "sku_ware"
@@ -27,10 +33,12 @@ class SKU(Base):
     width = Column(Numeric(precision=5, scale=1))
     height = Column(Numeric(precision=5, scale=1))
     weight = Column(Numeric(precision=5, scale=1))
-    in_stock = Column(Integer)
+    count = Column(Integer)
     barcode = Column(Text)
 
-    cargotypes = relationship("Cargotype", secondary=sku_cargotype_table, back_populates="skus")
+    cargotypes = relationship(
+        "Cargotype", secondary=sku_cargotype_table, back_populates="skus"
+    )
 
 
 class Cargotype(Base):
@@ -39,7 +47,9 @@ class Cargotype(Base):
     cargotype = Column(Integer, unique=True)
     description = Column(Text)
 
-    skus = relationship("SKU", secondary=sku_cargotype_table, back_populates="cargotypes")
+    skus = relationship(
+        "SKU", secondary=sku_cargotype_table, back_populates="cargotypes"
+    )
 
 
 class Carton(Base):
@@ -50,6 +60,4 @@ class Carton(Base):
     width = Column(Numeric(precision=5, scale=1))
     height = Column(Numeric(precision=5, scale=1))
     barcode = Column(Text)
-    in_stock = Column(Integer)
-
-
+    count = Column(Integer)
