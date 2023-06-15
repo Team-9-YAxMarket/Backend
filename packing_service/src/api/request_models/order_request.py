@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import UUID4, BaseModel, PositiveInt
+from pydantic import BaseModel
 
 from src.api.request_models.item_request import ItemRequest
 

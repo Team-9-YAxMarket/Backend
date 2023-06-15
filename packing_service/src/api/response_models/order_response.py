@@ -10,16 +10,13 @@ from src.db.models import Order
 
 class OrderCreateResponse(BaseModel):
     id: UUID4
-    status: Order.OrderStatus
-    create_at: datetime
-    updated_at: datetime
 
     class Config:
         orm_mode = True
 
 
 class OrderGetResponse(BaseModel):
-    id: UUID4
+    order_id: UUID4
     recommended_carton: List[Optional[CartonResponse]]
     items: List[ItemResponse]
 

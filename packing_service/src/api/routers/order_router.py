@@ -21,14 +21,15 @@ class UserCBV:
 
     @router.get(
         "/",
-        response_model=List[OrderGetResponse],
+        response_model=OrderGetResponse,
         response_model_exclude_none=True,
         status_code=HTTPStatus.OK,
         summary="Get Order list",
         response_description=HTTPStatus.OK.phrase,
     )
-    async def list_orders(self) -> List[OrderGetResponse]:
-        return await self._order_service.list_all_orders()
+    async def get_next_order(self) -> OrderGetResponse:
+        order = await self._order_service.get_next_order()
+        return order
 
     @router.post(
         "/",
@@ -43,7 +44,4 @@ class UserCBV:
         self, order: OrderCreateRequest
     ) -> OrderCreateResponse:
         order_obj = await self._order_service.create_order(order)
-        print("*" * 100)
-        print(order_obj)
-        print("*" * 100)
         return order_obj

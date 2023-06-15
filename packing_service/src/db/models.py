@@ -43,20 +43,22 @@ class Base(DeclarativeBase):
         )
 
 
-class SKU(Base):
-    __tablename__ = "skus"
-
-    sku: Mapped[str] = mapped_column(TEXT, nullable=False)
-    barcode: Mapped[str] = mapped_column(TEXT, nullable=False)
-    img: Mapped[str]
-
-    __table_args__ = (sa.UniqueConstraint(sku, name="uc_sku"),)
+item_prompt_table = sa.Table(
+    "item_prompt",
+    Base.metadata,
+    sa.Column("item_id", sa.ForeignKey("items.id"), primary_key=True),
+    sa.Column("prompt_id", sa.ForeignKey("prompts.id"), primary_key=True),
+)
 
 
 class Prompt(Base):
     __tablename__ = "prompts"
 
     prompt: Mapped[str] = mapped_column(TEXT, nullable=False)
+    items: Mapped[Optional[List["Item"]]] = relationship(
+        secondary=item_prompt_table,
+        back_populates="prompts",
+    )
 
     __table_args__ = (sa.UniqueConstraint(prompt, name="uc_prompt"),)
 
@@ -68,20 +70,6 @@ class Carton(Base):
     barcode: Mapped[str] = mapped_column(TEXT, nullable=False)
 
     __table_args__ = (sa.UniqueConstraint(carton_type, name="uc_carton_type"),)
-
-
-class ItemPrompt(Base):
-    """Item and Prompt association table."""
-
-    __tablename__ = "item_prompt"
-
-    item_id: Mapped[UUID] = mapped_column(
-        sa.ForeignKey("items.id"), primary_key=True
-    )
-    prompt_id: Mapped[UUID] = mapped_column(
-        sa.ForeignKey("prompts.id"), primary_key=True
-    )
-    prompt: Mapped[Prompt] = relationship()
 
 
 class Item(Base):
@@ -98,12 +86,14 @@ class Item(Base):
     status: Mapped[ItemStatus] = mapped_column(
         ENUM(ItemStatus, name="item_status"), default=ItemStatus.ADDED
     )
-    sku_id: Mapped[UUID] = mapped_column(
-        sa.ForeignKey("skus.id", ondelete="SET NULL")
-    )
-    sku: Mapped[SKU] = relationship()
+    sku: Mapped[str] = mapped_column(TEXT, nullable=False)
+    barcode: Mapped[str] = mapped_column(TEXT, nullable=False)
+    img: Mapped[str]
     count: Mapped[int]
-    prompts: Mapped[Optional[List[ItemPrompt]]] = relationship()
+    prompts: Mapped[Optional[List[Prompt]]] = relationship(
+        secondary=item_prompt_table,
+        back_populates="items",
+    )
     box_id: Mapped[Optional[UUID]] = mapped_column(UUID(as_uuid=True))
     order_id: Mapped[Optional[UUID]] = mapped_column(
         sa.ForeignKey("orders.id")

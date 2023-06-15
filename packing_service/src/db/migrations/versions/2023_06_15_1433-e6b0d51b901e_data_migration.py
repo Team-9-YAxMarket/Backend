@@ -2,40 +2,39 @@
 
 Revision ID: e6b0d51b901e
 Revises: e90ced86cc0a
-Create Date: 2023-06-14 16:33:20.573973
+Create Date: 2023-06-15 14:33:20.573973
 
 """
-import csv
+import json
 from pathlib import Path
 
 from alembic import op
 
 from src.core.settings import BASE_DIR
-from src.db.models import SKU, Carton, Prompt
+from src.db.models import Carton, Item, Prompt
 
 # revision identifiers, used by Alembic.
 revision = "e6b0d51b901e"
-down_revision = "e90ced86cc0a"
+down_revision = "7b33ed336f6e"
 branch_labels = None
 depends_on = None
 
 DATA_DIR = BASE_DIR / Path("data")
-TABLES = [SKU, Carton, Prompt]
+TABLES = [Item, Carton, Prompt]
 
 
-def read_csv(file_name):
-    with open(file_name, "r") as csvfile:
-        reader = csv.DictReader(csvfile)
-        rows = [r for r in reader]
-    return rows
+def read_json(file_name):
+    with open(file_name, "r") as fp:
+        data = json.load(fp)
+    return data
 
 
 def upgrade() -> None:
 
     for table in TABLES:
-        data_file = DATA_DIR / Path(table.__tablename__ + ".csv")
-        rows = read_csv(data_file)
-        op.bulk_insert(table.__table__, rows)
+        data_file = DATA_DIR / Path(table.__tablename__ + ".json")
+        data = read_json(data_file)
+        op.bulk_insert(table.__table__, data)
 
 
 def downgrade() -> None:

@@ -2,6 +2,8 @@ from typing import List, Optional
 
 from pydantic import UUID4, AnyUrl, BaseModel, PositiveInt
 
+from src.api.response_models.prompt_response import PromptResponse
+
 
 class ItemResponse(BaseModel):
     id: UUID4

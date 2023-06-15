@@ -1,13 +1,12 @@
 from typing import List, Optional
 
-from pydantic import UUID4, BaseModel, PositiveInt
-
-from src.api.request_models.prompt_request import PromptRequest
-from src.api.request_models.sku_request import SKURequest
+from pydantic import UUID4, AnyUrl, BaseModel, PositiveInt
 
 
 class ItemRequest(BaseModel):
-    sku: SKURequest
+    sku: str
+    barcode: str
+    img: AnyUrl
     count: PositiveInt
     prompts: Optional[List[Optional[str]]]
     box_id: Optional[UUID4]
