@@ -34,6 +34,7 @@ class SKU(Base):
     height = Column(Numeric(precision=5, scale=1))
     weight = Column(Numeric(precision=5, scale=1))
     count = Column(Integer)
+    img =Column(Text)
     barcode = Column(Text)
 
     cargotypes = relationship(

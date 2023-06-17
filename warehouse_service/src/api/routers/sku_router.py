@@ -48,7 +48,7 @@ class SKUCBV:
         response_description=HTTPStatus.OK.phrase,
     )
     async def check_all_skus(
-        self, request: SKUItemsRequest
+        self, request: SKUItemsRequestStatus
     ) -> Optional[SKUResponseItems]:
         return await self.__sku_service.all_skus(request)
 

@@ -1,6 +1,7 @@
+from decimal import Decimal
 from typing import List
 
-from pydantic import BaseModel, PositiveInt
+from pydantic import AnyUrl, BaseModel, PositiveInt
 
 
 class SKUResponseCount(BaseModel):
@@ -20,6 +21,11 @@ class SKUResponse(BaseModel):
 
 class SKUResponseItem(BaseModel):
     sku: str
+    length: Decimal
+    width: Decimal
+    height: Decimal
+    barcode: str
+    img: AnyUrl
     cargotypes: List[str]
 
     class Config:

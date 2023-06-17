@@ -30,12 +30,22 @@ class SKUService:
         """Возвращает информацию о всех карготипах для sku из заказа."""
         response = []
         for item in request.items:
+            sku_info = await self.__sku_repository.get_sku_info(item.sku)
             cargotypes_in_warehouse = (
                 await self.__sku_cargo_repository.get_cargotypes_for_sku(
                     item.sku
                 )
             )
-            data = {"sku": item.sku, "cargotypes": cargotypes_in_warehouse}
+            data = {
+                "sku": item.sku,
+                "length": sku_info.length,
+                "width": sku_info.width,
+                "height": sku_info.height,
+                "weight": sku_info.weight,
+                "barcode": sku_info.barcode,
+                "img": sku_info.img,
+                "cargotypes": cargotypes_in_warehouse
+            }
             response.append(data)
         return {"items": response}
 

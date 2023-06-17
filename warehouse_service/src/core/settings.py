@@ -26,6 +26,9 @@ class Settings(BaseSettings):
             f"{self.WAREHOUSE_APP_DB_USER}:{self.WAREHOUSE_APP_DB_PASSWORD}"
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.WAREHOUSE_APP_DB_NAME}"
         )
+    # @property
+    # def warehouse_url(self) - >:
+    #
 
     class Config:
         env_file = ".env"

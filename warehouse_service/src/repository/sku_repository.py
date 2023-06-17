@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,3 +23,10 @@ class SKURepository(AbstractRepository):
         sku_available = await self._session.execute(statement)
 
         return sku_available.scalars().first() or 0
+
+    async def get_sku_info(self ,sku:str) ->Optional[SKU]:
+        """Возвращает информацию о характеристиках SKU."""
+        sku_info = await self._session.execute(
+            select(SKU).filter(SKU.sku == sku)
+        )
+        return sku_info.scalar()

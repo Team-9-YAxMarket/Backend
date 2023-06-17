@@ -1,4 +1,3 @@
-import decimal
 from typing import List
 from pydantic import BaseModel, Extra, PositiveInt
 
@@ -12,18 +11,15 @@ class RequestBase(BaseModel):
         extra = Extra.forbid
 
 
-class SKURequest(RequestBase):
+class SKURequest(BaseModel):
     sku: str
 
 
-class SKUItemsRequest(RequestBase):
-    items: List[SKURequest]
-
-
-class SKURequestStatus(RequestBase):
+class ItemRequest(BaseModel):
     sku: str
-    count: PositiveInt
+    count: int
 
 
-class SKUItemsRequestStatus(RequestBase):
-    items: List[SKURequestStatus]
+class OrderRequest(BaseModel):
+    orderId: str
+    items: List[ItemRequest]
