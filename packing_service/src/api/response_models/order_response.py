@@ -1,15 +1,13 @@
-from datetime import datetime
 from typing import List, Optional
 
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4, BaseModel, Field
 
 from src.api.response_models.carton_response import CartonResponse
-from src.api.response_models.item_response import ItemResponse
-from src.db.models import Order
+from src.api.response_models.item_response import ItemFullResponse
 
 
 class OrderCreateResponse(BaseModel):
-    id: UUID4
+    orderId: UUID4 = Field(alias="id")  # noqa N815
 
     class Config:
         orm_mode = True
@@ -18,7 +16,14 @@ class OrderCreateResponse(BaseModel):
 class OrderGetResponse(BaseModel):
     order_id: UUID4
     recommended_carton: List[Optional[CartonResponse]]
-    items: List[ItemResponse]
+    items: List[ItemFullResponse]
+
+    class Config:
+        orm_mode = True
+
+
+class OrderUpdateResponse(BaseModel):
+    id: UUID4
 
     class Config:
         orm_mode = True

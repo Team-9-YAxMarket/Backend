@@ -57,7 +57,7 @@ def upgrade() -> None:
         "items",
         sa.Column("id", sa.UUID(), nullable=False),
         sa.Column("status", ITEM_STATUS, nullable=False),
-        sa.Column("ku", sa.TEXT(), nullable=False),
+        sa.Column("sku", sa.TEXT(), nullable=False),
         sa.Column("barcode", sa.TEXT(), nullable=False),
         sa.Column("img", sa.String(), nullable=False),
         sa.Column("count", sa.Integer(), nullable=False),
@@ -104,7 +104,6 @@ def upgrade() -> None:
         "selected_carton",
         sa.Column("order_id", sa.UUID(), nullable=False),
         sa.Column("carton_id", sa.UUID(), nullable=False),
-        sa.Column("id", sa.UUID(), nullable=False),
         sa.ForeignKeyConstraint(
             ["carton_id"],
             ["cartons.id"],
@@ -113,7 +112,7 @@ def upgrade() -> None:
             ["order_id"],
             ["orders.id"],
         ),
-        sa.PrimaryKeyConstraint("order_id", "carton_id", "id"),
+        sa.PrimaryKeyConstraint("order_id", "carton_id"),
     )
     op.create_table(
         "sessions",

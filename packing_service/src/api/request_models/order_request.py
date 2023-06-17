@@ -1,14 +1,19 @@
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import UUID4, BaseModel, Field
 
-from src.api.request_models.item_request import ItemRequest
+from src.api.request_models.item_request import (
+    ItemCreateRequest,
+    ItemUpdateRequest,
+)
 
 
 class OrderCreateRequest(BaseModel):
-    items: List[ItemRequest]
+    items: List[ItemCreateRequest]
 
 
 class OrderUpdateRequest(BaseModel):
-    items: List[ItemRequest]
-    recommended_carton: List[Optional[str]]
+    id: UUID4 = Field(alias="orderId")
+    package: Optional[str]
+    items: List[Optional[ItemUpdateRequest]]
+    no_room_for: List[Optional[ItemUpdateRequest]]

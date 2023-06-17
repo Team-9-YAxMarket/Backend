@@ -1,12 +1,15 @@
 from typing import List, Optional
 
-from pydantic import UUID4, AnyUrl, BaseModel, PositiveInt
+from pydantic import AnyUrl, BaseModel, PositiveInt
 
 
-class ItemRequest(BaseModel):
+class ItemCreateRequest(BaseModel):
     sku: str
     barcode: str
     img: AnyUrl
     count: PositiveInt
-    prompts: Optional[List[Optional[str]]]
-    box_id: Optional[UUID4]
+
+
+class ItemUpdateRequest(BaseModel):
+    sku: str
+    add_packs: List[Optional[str]]

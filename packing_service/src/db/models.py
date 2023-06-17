@@ -5,10 +5,11 @@ from typing import Any, List, Optional
 
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import ENUM, TEXT, UUID
+from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
-class Base(DeclarativeBase):
+class Base(AsyncAttrs, DeclarativeBase):
     id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True),
         default=uuid.uuid4,
@@ -50,6 +51,13 @@ item_prompt_table = sa.Table(
     sa.Column("prompt_id", sa.ForeignKey("prompts.id"), primary_key=True),
 )
 
+selected_carton_table = sa.Table(
+    "selected_carton",
+    Base.metadata,
+    sa.Column("carton_id", sa.ForeignKey("cartons.id"), primary_key=True),
+    sa.Column("order_id", sa.ForeignKey("orders.id"), primary_key=True),
+)
+
 
 class Prompt(Base):
     __tablename__ = "prompts"
@@ -68,6 +76,9 @@ class Carton(Base):
 
     carton_type: Mapped[str] = mapped_column(TEXT, nullable=False)
     barcode: Mapped[str] = mapped_column(TEXT, nullable=False)
+    selected_for: Mapped[List["Order"]] = relationship(
+        back_populates="selected_carton", secondary=selected_carton_table
+    )
 
     __table_args__ = (sa.UniqueConstraint(carton_type, name="uc_carton_type"),)
 
@@ -91,8 +102,7 @@ class Item(Base):
     img: Mapped[str]
     count: Mapped[int]
     prompts: Mapped[Optional[List[Prompt]]] = relationship(
-        secondary=item_prompt_table,
-        back_populates="items",
+        secondary=item_prompt_table, back_populates="items"
     )
     box_id: Mapped[Optional[UUID]] = mapped_column(UUID(as_uuid=True))
     order_id: Mapped[Optional[UUID]] = mapped_column(
@@ -116,22 +126,8 @@ class RecommendedCarton(Base):
     carton_id: Mapped[UUID] = mapped_column(
         sa.ForeignKey("cartons.id"), primary_key=True
     )
-    carton: Mapped[Carton] = relationship()
+    carton: Mapped["Carton"] = relationship()
     box_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
-
-
-class SelectedCarton(Base):
-    """Recommended carton (Order and Carton) association table."""
-
-    __tablename__ = "selected_carton"
-
-    order_id: Mapped[UUID] = mapped_column(
-        sa.ForeignKey("orders.id"), primary_key=True
-    )
-    carton_id: Mapped[UUID] = mapped_column(
-        sa.ForeignKey("cartons.id"), primary_key=True
-    )
-    carton: Mapped[Carton] = relationship()
 
 
 class Order(Base):
@@ -159,8 +155,12 @@ class Order(Base):
     items: Mapped[List[Item]] = relationship(
         back_populates="order", cascade="all, delete-orphan"
     )
-    recommended_carton: Mapped[Optional[RecommendedCarton]] = relationship()
-    selected_carton: Mapped[Optional[SelectedCarton]] = relationship()
+    recommended_carton: Mapped[
+        Optional[List[RecommendedCarton]]
+    ] = relationship(cascade="all, delete-orphan")
+    selected_carton: Mapped[List["Carton"]] = relationship(
+        secondary=selected_carton_table, back_populates="selected_for"
+    )
 
 
 class Session(Base):

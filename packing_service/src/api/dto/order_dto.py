@@ -12,6 +12,7 @@ from src.api.dto.item_dto import ItemDTO
 class OrderDTO:
     order_id: UUID
     recommended_carton: List[Optional[CartonDTO]]
+    selected_carton: List[Optional[CartonDTO]]
     items: List[ItemDTO]
 
     @classmethod
@@ -19,7 +20,10 @@ class OrderDTO:
         return OrderDTO(
             order_id=db_row.id,
             recommended_carton=[
-                CartonDTO(r) for r in db_row.recommended_carton
+                CartonDTO.parse_from_db(r) for r in db_row.recommended_carton
+            ],
+            selected_carton=[
+                CartonDTO.parse_from_db(r) for r in db_row.selected_carton
             ],
             items=[ItemDTO.parse_from_db(i) for i in db_row.items],
         )

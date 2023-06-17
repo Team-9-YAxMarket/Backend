@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
 
 from sqlalchemy.engine import Row
@@ -15,8 +15,8 @@ class CartonDTO:
     @classmethod
     def parse_from_db(cls, db_row: Row):
         return CartonDTO(
-            carton_id=db_row.id,
-            carton_type=db_row.carton_type,
-            barcode=db_row.barcode,
+            carton_id=db_row.carton.id,
+            carton_type=db_row.carton.carton_type,
+            barcode=db_row.carton.barcode,
             box_id=db_row.box_id,
         )
