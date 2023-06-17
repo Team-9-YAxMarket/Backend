@@ -18,38 +18,13 @@ class OrderRepository(AbstractRepository):
     def __init__(self, session: AsyncSession = Depends(get_session)) -> None:
         super().__init__(session, Order)
 
-    async def get_full_order_by_id(self, order_id: UUID) -> Optional[Order]:
+    async def get_next_forming_order(self) -> Optional[Order]:
         stmt = (
             select(Order)
-            .options(
-                selectinload(Order.items).selectinload(Item.prompts),
-                selectinload(Order.recommended_carton),
-                selectinload(Order.selected_carton),
-            )
-            .where(Order.id == order_id)
-        )
-        return (await self._session.execute(stmt)).scalars().first()
-
-    async def get_next_forming_order(self) -> Optional[OrderDTO]:
-        stmt = (
-            select(Order)
-            .options(
-                selectinload(Order.items).selectinload(Item.prompts),
-                selectinload(Order.recommended_carton).selectinload(
-                    RecommendedCarton.carton
-                ),
-                selectinload(Order.selected_carton),
-            )
             .where(Order.status == Order.OrderStatus.IS_FORMING)
             .order_by(Order.updated_at)
         )
         order = (await self._session.execute(stmt)).scalars().first()
         if not order:
             return None
-        return OrderDTO.parse_from_db(order)
-
-    async def get_order_by_name_or_none(self, order: str) -> Optional[Order]:
-        order = await self._session.execute(
-            select(Order).where(Order.order == order)
-        )
-        return order.scalars().first()
+        return order

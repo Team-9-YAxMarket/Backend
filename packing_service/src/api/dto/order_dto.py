@@ -20,10 +20,12 @@ class OrderDTO:
         return OrderDTO(
             order_id=db_row.id,
             recommended_carton=[
-                CartonDTO.parse_from_db(r) for r in db_row.recommended_carton
+                CartonDTO.parse_from_db_recommended(r)
+                for r in db_row.recommended_carton
             ],
             selected_carton=[
-                CartonDTO.parse_from_db(r) for r in db_row.selected_carton
+                CartonDTO.parse_from_db_selected(r)
+                for r in db_row.selected_carton
             ],
             items=[ItemDTO.parse_from_db(i) for i in db_row.items],
         )

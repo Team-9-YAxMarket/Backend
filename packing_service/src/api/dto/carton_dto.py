@@ -13,10 +13,19 @@ class CartonDTO:
     box_id: Optional[UUID]
 
     @classmethod
-    def parse_from_db(cls, db_row: Row):
+    def parse_from_db_recommended(cls, db_row: Row):
         return CartonDTO(
             carton_id=db_row.carton.id,
             carton_type=db_row.carton.carton_type,
             barcode=db_row.carton.barcode,
             box_id=db_row.box_id,
+        )
+
+    @classmethod
+    def parse_from_db_selected(cls, db_row: Row):
+        return CartonDTO(
+            carton_id=db_row.id,
+            carton_type=db_row.carton_type,
+            barcode=db_row.barcode,
+            box_id=None,
         )

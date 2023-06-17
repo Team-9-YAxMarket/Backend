@@ -3,7 +3,6 @@ from typing import Optional
 
 from fastapi import Depends
 
-from src.api.dto.order_dto import OrderDTO
 from src.api.request_models.order_request import (
     OrderCreateRequest,
     OrderUpdateRequest,
@@ -25,19 +24,21 @@ class OrderService:
         self._carton_service = carton_service
         self._item_service = item_service
 
-    async def get_next_order(self) -> Optional[OrderDTO]:
-        next_order = await self._order_repository.get_next_forming_order()
-        return next_order
+    async def get_next_order(self) -> Optional[Order]:
+        return await self._order_repository.get_next_forming_order()
+
+    async def get_order_by_id(self, order_id: uuid.UUID) -> Optional[Order]:
+        return await self._order_repository.get(order_id)
 
     async def create_order(self, schema: OrderCreateRequest) -> Order:
         items = [await self._item_service.create_item(i) for i in schema.items]
         order = Order(items=items)
         return await self._order_repository.create(order)
 
-    async def update_order(self, schema: OrderUpdateRequest) -> Order:
-        order: Order = await self._order_repository.get_full_order_by_id(
-            schema.id
-        )
+    async def update_order(
+        self, order_id: uuid.UUID, schema: OrderUpdateRequest
+    ) -> Order:
+        order: Order = await self._order_repository.get(order_id)
         box_id: Optional[uuid.UUID] = None
 
         # Update recommended carton

@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Optional
 from uuid import UUID
 
@@ -12,8 +12,8 @@ class ItemDTO:
     barcode: str
     img: str
     count: int
-    box_id: Optional[UUID]
-    prompt: Optional[List[Optional[str]]]
+    box_id: Optional[UUID] = None
+    prompt: Optional[List[Optional[str]]] = field(default_factory=list)
 
     @classmethod
     def parse_from_db(cls, db_row: Row):

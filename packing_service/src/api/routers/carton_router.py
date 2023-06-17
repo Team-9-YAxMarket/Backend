@@ -11,7 +11,7 @@ router = APIRouter(prefix="/carton", tags=["Carton"])
 
 
 @cbv(router)
-class UserCBV:
+class CartonCBV:
     _carton_service: CartonService = Depends()
 
     @router.get(

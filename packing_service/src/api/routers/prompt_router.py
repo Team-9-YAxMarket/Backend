@@ -13,7 +13,7 @@ router = APIRouter(prefix="/prompt", tags=["Prompt"])
 
 
 @cbv(router)
-class UserCBV:
+class PromptCBV:
     _prompt_service: PromptService = Depends()
 
     @router.get(

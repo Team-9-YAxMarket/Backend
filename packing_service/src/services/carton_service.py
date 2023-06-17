@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import Depends
 
 from src.db.models import Carton
@@ -18,4 +20,8 @@ class CartonService:
         carton_obj = await self._carton_repository.get_carton_by_carton_type(
             carton_type
         )
+        return carton_obj
+
+    async def get_carton_by_id(self, carton_id: UUID) -> Carton:
+        carton_obj = await self._carton_repository.get(carton_id)
         return carton_obj

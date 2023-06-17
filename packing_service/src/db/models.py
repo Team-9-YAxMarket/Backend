@@ -66,6 +66,7 @@ class Prompt(Base):
     items: Mapped[Optional[List["Item"]]] = relationship(
         secondary=item_prompt_table,
         back_populates="prompts",
+        lazy="selectin",
     )
 
     __table_args__ = (sa.UniqueConstraint(prompt, name="uc_prompt"),)
@@ -77,7 +78,9 @@ class Carton(Base):
     carton_type: Mapped[str] = mapped_column(TEXT, nullable=False)
     barcode: Mapped[str] = mapped_column(TEXT, nullable=False)
     selected_for: Mapped[List["Order"]] = relationship(
-        back_populates="selected_carton", secondary=selected_carton_table
+        back_populates="selected_carton",
+        secondary=selected_carton_table,
+        lazy="selectin",
     )
 
     __table_args__ = (sa.UniqueConstraint(carton_type, name="uc_carton_type"),)
@@ -102,13 +105,15 @@ class Item(Base):
     img: Mapped[str]
     count: Mapped[int]
     prompts: Mapped[Optional[List[Prompt]]] = relationship(
-        secondary=item_prompt_table, back_populates="items"
+        secondary=item_prompt_table, back_populates="items", lazy="selectin"
     )
     box_id: Mapped[Optional[UUID]] = mapped_column(UUID(as_uuid=True))
     order_id: Mapped[Optional[UUID]] = mapped_column(
         sa.ForeignKey("orders.id")
     )
-    order: Mapped["Order"] = relationship(back_populates="items")
+    order: Mapped["Order"] = relationship(
+        back_populates="items", lazy="selectin"
+    )
 
     __table_args__ = (
         sa.CheckConstraint("count > 0", name="check_count_positive"),
@@ -126,7 +131,7 @@ class RecommendedCarton(Base):
     carton_id: Mapped[UUID] = mapped_column(
         sa.ForeignKey("cartons.id"), primary_key=True
     )
-    carton: Mapped["Carton"] = relationship()
+    carton: Mapped["Carton"] = relationship(lazy="selectin")
     box_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
 
 
@@ -153,13 +158,15 @@ class Order(Base):
         ENUM(OrderStatus, name="order_status"), default=OrderStatus.IS_FORMING
     )
     items: Mapped[List[Item]] = relationship(
-        back_populates="order", cascade="all, delete-orphan"
+        back_populates="order", cascade="all, delete-orphan", lazy="selectin"
     )
     recommended_carton: Mapped[
         Optional[List[RecommendedCarton]]
-    ] = relationship(cascade="all, delete-orphan")
+    ] = relationship(cascade="all, delete-orphan", lazy="selectin")
     selected_carton: Mapped[List["Carton"]] = relationship(
-        secondary=selected_carton_table, back_populates="selected_for"
+        secondary=selected_carton_table,
+        back_populates="selected_for",
+        lazy="selectin",
     )
 
 
@@ -191,4 +198,4 @@ class Session(Base):
     order_id: Mapped[UUID] = mapped_column(
         sa.ForeignKey("orders.id", ondelete="SET NULL")
     )
-    order: Mapped[Order] = relationship()
+    order: Mapped[Order] = relationship(lazy="selectin")
