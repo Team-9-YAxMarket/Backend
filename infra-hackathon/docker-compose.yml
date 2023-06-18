@@ -1,0 +1,62 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:13.2-alpine
+    container_name: postgres
+    restart: unless-stopped
+    networks:
+      - database
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d/
+      - hackathon_db-data:/var/lib/postgresql/data/
+    env_file: .env
+    healthcheck:
+      test: pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
+  frontend:
+    image: ivr42/hackathon-front:latest
+    volumes:
+      - hackathon_html:/app/build/
+
+  packing-service:
+    image: ivr42/hackathon-packing-service:latest
+    container_name: packing-service
+    restart: unless-stopped
+    networks:
+      - backend
+      - database
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: unless-stopped
+    networks:
+      - outside
+      - backend
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/templates/default.conf.template
+      - ./nginx/proxy_params:/etc/nginx/proxy_params
+      - hackathon_html:/usr/share/nginx/html/
+    depends_on:
+      - packing-service
+    env_file: .env
+
+networks:
+  outside:
+  backend:
+  database:
+    internal: true
+
+volumes:
+  hackathon_db-data:
+  hackathon_html:
+    
