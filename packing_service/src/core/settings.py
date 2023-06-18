@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     """Настройки проекта."""
 
     DEBUG: bool = False
-    PACKING_ROOT_PATH: str = ""
+    ROOT_PATH: str = ""
     PACKING_APP_DB_NAME: str
     PACKING_APP_DB_USER: str
     PACKING_APP_DB_PASSWORD: str
