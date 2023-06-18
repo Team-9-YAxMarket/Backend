@@ -1,9 +1,9 @@
 from pydantic import UUID4, BaseModel
 
 
-class UserResponse(BaseModel):
+class PromptResponse(BaseModel):
     id: UUID4
-    username: str
+    prompt: str
 
     class Config:
         orm_mode = True

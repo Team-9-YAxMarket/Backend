@@ -1,0 +1,44 @@
+[
+  {
+    "sku": "000198cfae123aef536f2fcf0b104049",
+    "barcode": "000198cfae123",
+    "img": "https://avatars.mds.yandex.net/get-mpic/5254781/img_id4545903996225159655.jpeg/x248_trim",
+    "count": 4
+  },
+  {
+    "sku": "0003da69535758c817b78b64da05aae0",
+    "barcode": "0003da6953575",
+    "img": "https://avatars.mds.yandex.net/get-mpic/4525599/img_id6402133370367015387.jpeg/x248_trim",
+    "count": 1
+  },
+  {
+    "sku": "100f280fac26fb4a046f673af85c47d2",
+    "barcode": "100f280fac26f",
+    "img": "https://avatars.mds.yandex.net/get-mpic/4581218/img_id1352429906075879600.jpeg/x248_trim",
+    "count": 2
+  },
+  {
+    "sku": "2401f9945033ca294c1357935d84704d",
+    "barcode": "2401f9945033c",
+    "img": "https://avatars.mds.yandex.net/get-mpic/5209949/img_id4399789187211414415.jpeg/x248_trim",
+    "count": 3
+  },
+  {
+    "sku": "3c084a90bf956349e4864f8c8f0d0eac",
+    "barcode": "3c084a90bf956",
+    "img": "https://avatars.mds.yandex.net/get-mpic/5279470/img_id6914528549193410430.jpeg/x248_trim",
+    "count": 1
+  },
+  {
+    "sku": "7bf0c9549634222429596403b9d396d1",
+    "barcode": "7bf0c95496342",
+    "img": "https://avatars.mds.yandex.net/get-mpic/4579226/img_id5657616646943055596.jpeg/x248_trim",
+    "count": 2
+  },
+  {
+    "sku": "b388ea4926260eab899fb8131b6d4bab",
+    "barcode": "b388ea4926260",
+    "img": "https://avatars.mds.yandex.net/get-marketpic/4474455/pic12974e37b350dd1e6ff0bc225d5b3d1c/x248_trim",
+    "count": 3
+  }
+]
