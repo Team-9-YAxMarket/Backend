@@ -4,7 +4,7 @@ from fastapi import Depends
 from pydantic import PositiveInt
 from src.repository.sku_cargo_repository import SKUCargotypeRepository
 from src.repository.sku_repository import SKURepository
-from src.api.request_models.request_base import SKURequest, SKUItemsRequest
+from src.api.request_models.request_base import SKUItemsRequestStatus
 from src.core.exceptions import SkuNotFoundError
 
 
@@ -26,7 +26,7 @@ class SKUService:
             return {"status": "FAULT"}
         return {"status": "OK"}
 
-    async def all_skus(self, request: SKUItemsRequest):
+    async def all_skus(self, request: SKUItemsRequestStatus):
         """Возвращает информацию о всех карготипах для sku из заказа."""
         response = []
         for item in request.items:
@@ -44,12 +44,13 @@ class SKUService:
                 "weight": sku_info.weight,
                 "barcode": sku_info.barcode,
                 "img": sku_info.img,
+                "count": item.count,
                 "cargotypes": cargotypes_in_warehouse
             }
             response.append(data)
         return {"items": response}
 
-    async def all_skus_status(self, request: SKUItemsRequest):
+    async def all_skus_status(self, request: SKUItemsRequestStatus):
         """Возвращает статус доступности на складе всех sku из заказа."""
         for item in request.items:
             count_in_warehouse = await self.__sku_repository.get_sku_count(

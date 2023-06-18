@@ -24,7 +24,9 @@ class SKUResponseItem(BaseModel):
     length: Decimal
     width: Decimal
     height: Decimal
+    weight: Decimal
     barcode: str
+    count: PositiveInt
     img: AnyUrl
     cargotypes: List[str]
 

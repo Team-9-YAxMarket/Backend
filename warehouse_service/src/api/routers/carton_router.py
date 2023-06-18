@@ -24,6 +24,5 @@ class CartonCBV:
         response_description=HTTPStatus.OK.phrase,
     )
     async def check_carton(
-        self, carton_type: str, count: PositiveInt
-    ) -> Optional[CartonResponse]:
-        return await self.__carton_service.cartons_info(carton_type, count)
+        self, carton_type: str) -> Optional[CartonResponse]:
+        return await self.__carton_service.cartons_info(carton_type)

@@ -12,13 +12,14 @@ class RequestBase(BaseModel):
         extra = Extra.forbid
 
 
-class SKURequest(RequestBase):
-    sku: str
-
-
-class SKUItemsRequest(RequestBase):
-    items: List[SKURequest]
-
+# class SKURequest(RequestBase):
+#     sku: str
+#     count: PositiveInt
+#
+#
+# class SKUItemsRequest(RequestBase):
+#     items: List[SKURequest]
+#
 
 class SKURequestStatus(RequestBase):
     sku: str
@@ -27,3 +28,5 @@ class SKURequestStatus(RequestBase):
 
 class SKUItemsRequestStatus(RequestBase):
     items: List[SKURequestStatus]
+
+

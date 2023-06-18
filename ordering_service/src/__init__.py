@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from src.api.routers.sku_router import ordering_router
+from src.api.routers.sku_router_with_dto import ordering_router
 
 
 def create_app() -> FastAPI:

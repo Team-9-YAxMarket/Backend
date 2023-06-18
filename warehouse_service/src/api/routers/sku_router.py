@@ -7,17 +7,13 @@ from pydantic.types import PositiveInt
 
 from src.api.response_models.sku_response import SKUResponse, SKUResponseStatus
 
-from src.api.request_models.request_base import (
-    SKUItemsRequest,
-    SKURequest,
-    SKUItemsRequestStatus,
-)
+from src.api.request_models.request_base import SKUItemsRequestStatus
 
 from src.services.sku_service import SKUService
 
 from src.api.response_models.sku_response import SKUResponseItems
 
-from src.api.response_models.sku_response import SKUResponseCount
+# from src.api.response_models.sku_response import SKUResponseCount
 
 router_sku = APIRouter(prefix="/check_skus", tags=["SKU"])
 
@@ -26,18 +22,18 @@ router_sku = APIRouter(prefix="/check_skus", tags=["SKU"])
 class SKUCBV:
     __sku_service: SKUService = Depends()
 
-    @router_sku.get(
-        "/",
-        response_model=SKUResponseCount,
-        response_model_exclude_none=True,
-        status_code=HTTPStatus.OK,
-        summary="Checking presence of SKUs",
-        response_description=HTTPStatus.OK.phrase,
-    )
-    async def check_skus(
-        self, sku: str, count: PositiveInt
-    ) -> Optional[SKUResponseCount]:
-        return await self.__sku_service.skus(sku, count)
+    # @router_sku.get(
+    #     "/",
+    #     response_model=SKUResponseCount,
+    #     response_model_exclude_none=True,
+    #     status_code=HTTPStatus.OK,
+    #     summary="Checking presence of SKUs",
+    #     response_description=HTTPStatus.OK.phrase,
+    # )
+    # async def check_skus(
+    #     self, sku: str, count: PositiveInt
+    # ) -> Optional[SKUResponseCount]:
+    #     return await self.__sku_service.skus(sku, count)
 
     @router_sku.post(
         "/",

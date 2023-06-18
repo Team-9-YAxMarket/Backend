@@ -21,5 +21,4 @@ class ItemRequest(BaseModel):
 
 
 class OrderRequest(BaseModel):
-    orderId: str
     items: List[ItemRequest]

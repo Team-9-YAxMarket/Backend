@@ -13,10 +13,10 @@ class CartonService:
     ) -> None:
         self.__carton_repository = carton_repository
 
-    async def cartons_info(self, carton_type: str, count: PositiveInt):
+    async def cartons_info(self, carton_type: str):
         """Возвращает информацию о доступных упаковках из базы данных склада."""
         carton = await self.__carton_repository.get_carton(carton_type)
-        if carton is None or carton.count < count:
+        if carton is None or carton.count < 1:
             raise CartonNotFoundError(carton_type)
         return CartonResponse(
             carton_type=carton.carton_type,
