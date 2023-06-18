@@ -22,5 +22,5 @@ class CartonCBV:
         summary="Get Carton list",
         response_description=HTTPStatus.OK.phrase,
     )
-    async def list_carton(self) -> Any:
+    async def list_carton(self) -> CartonResponse:
         return await self._carton_service.list_all_carton()
