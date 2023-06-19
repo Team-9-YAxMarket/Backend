@@ -3,7 +3,6 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
-from pydantic.types import PositiveInt
 
 from src.api.response_models.sku_response import SKUResponse, SKUResponseStatus
 
