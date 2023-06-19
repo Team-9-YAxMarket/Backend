@@ -4,10 +4,13 @@ from uuid import UUID
 
 from sqlalchemy.engine import Row
 
+from src.db.models import Item
+
 
 @dataclass
 class ItemDTO:
     id: UUID
+    status: Item.ItemStatus
     sku: str
     barcode: str
     img: str
@@ -19,6 +22,7 @@ class ItemDTO:
     def parse_from_db(cls, db_row: Row):
         return ItemDTO(
             id=db_row.id,
+            status=db_row.status,
             sku=db_row.sku,
             barcode=db_row.barcode,
             img=db_row.img,

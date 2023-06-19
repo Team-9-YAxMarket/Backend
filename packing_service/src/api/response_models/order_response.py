@@ -22,6 +22,16 @@ class OrderGetResponse(BaseModel):
         orm_mode = True
 
 
+class OrderFullResponse(BaseModel):
+    order_id: UUID4
+    recommended_carton: List[Optional[CartonAsPartResponse]]
+    selected_carton: List[Optional[CartonAsPartResponse]]
+    items: List[ItemFullResponse]
+
+    class Config:
+        orm_mode = True
+
+
 class OrderUpdateResponse(BaseModel):
     id: UUID4
 
