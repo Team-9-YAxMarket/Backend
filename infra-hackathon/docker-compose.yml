@@ -2,7 +2,7 @@ version: '3.8'
 services:
   db:
     image: postgres:13.2-alpine
-    container_name: postgres
+    container_name: hackathon-postgres
     restart: unless-stopped
     networks:
       - database
@@ -18,12 +18,13 @@ services:
 
   frontend:
     image: ivr42/hackathon-front:latest
+    container_name: hackathon-frontend
     volumes:
       - hackathon_html:/app/build/
 
   packing-service:
     image: ivr42/hackathon-packing-service:latest
-    container_name: packing-service
+    container_name: hackathon-packing-service
     restart: unless-stopped
     networks:
       - backend
@@ -35,13 +36,13 @@ services:
 
   nginx:
     image: nginx:latest
-    container_name: nginx
+    container_name: hackathon-nginx
     restart: unless-stopped
     networks:
       - outside
       - backend
     ports:
-      - "80:80"
+      - "9009:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/templates/default.conf.template
       - ./nginx/proxy_params:/etc/nginx/proxy_params
