@@ -17,7 +17,7 @@ class OrderUpdateRequest(BaseModel):
     id: UUID4 = Field(alias="orderId")
     package: Optional[str]
     items: List[Optional[ItemUpdateRequest]]
-    no_room_for: List[Optional[ItemUpdateRequest]]
+    no_room_for: List[Optional[ItemUpdateRequest]] | None = []
 
 
 class OrderSessionCloseRequest(BaseModel):

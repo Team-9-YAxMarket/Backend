@@ -7,11 +7,8 @@ from fastapi import APIRouter, HTTPException
 import httpx
 
 from src.api.request_models.request_base import OrderRequest
-
 from src.api.response_models.sku_response import SKUStatusResponse
-
 from src.api.dto.order import SKU
-
 from src.api.dto.order import Order
 
 ordering_router = APIRouter(prefix="/order", tags=["SKU"])
@@ -103,10 +100,10 @@ async def create_order(order: OrderRequest):
         return {"status": "Not enough carton on warehouse"}
 
     ml_info["carton_barcode"] = response.json()["barcode"]
-    summary_order_url = "http://packing-service:8080/api/v1/order/"
+    summary_order_url = "http://packing-service:8080/order/"
 
+    # отправляется запрос на создание заказа с обогащенными данными
     async with httpx.AsyncClient() as client:
-        # отправляется запрос на создание заказа с обогащенными данными
         response = await client.post(summary_order_url, json=ml_info)
 
     if response.status_code != 201:
@@ -114,4 +111,19 @@ async def create_order(order: OrderRequest):
             status_code=response.status_code,
             detail="Не удалось сформировать заказ",
         )
+
+    order_id = response.json().get("orderId")
+
+    # отправляется запрос на обновление заказа с обогащенными данными
+    async with httpx.AsyncClient() as client:
+        response = await client.patch(
+            summary_order_url + order_id, json=ml_info
+        )
+
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=response.status_code,
+            detail="Не удалось обновить заказ",
+        )
+
     return {"status": "OK"}
