@@ -7,7 +7,7 @@ from src.api.request_models.session_request import (
     SessionCreateRequest,
     SessionUpdateRequest,
 )
-from src.db.models import Session, Order
+from src.db.models import Order, Session
 from src.repository.session_repository import SessionRepository
 from src.services.carton_service import CartonService
 from src.services.order_service import OrderService

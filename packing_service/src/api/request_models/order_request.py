@@ -4,8 +4,8 @@ from pydantic import UUID4, BaseModel, Field
 
 from src.api.request_models.item_request import (
     ItemCreateRequest,
-    ItemUpdateRequest,
     ItemSessionCloseRequest,
+    ItemUpdateRequest,
 )
 
 

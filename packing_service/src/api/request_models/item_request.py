@@ -1,6 +1,7 @@
 from typing import List, Optional
 
-from pydantic import AnyUrl, BaseModel, PositiveInt, UUID4
+from pydantic import UUID4, AnyUrl, BaseModel, PositiveInt
+
 from src.db.models import Item
 
 

@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, List
+from typing import List
 
 from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv

@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
-from starlette.responses import Response, JSONResponse
+from starlette.responses import JSONResponse
 
 from src.api.dto.order_dto import OrderDTO
 from src.api.request_models.order_request import (
