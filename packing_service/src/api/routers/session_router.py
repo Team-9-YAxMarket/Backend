@@ -12,6 +12,7 @@ from src.api.request_models.session_request import (
 )
 from src.api.response_models.session_response import (
     SessionCreateResponse,
+    SessionFullResponse,
     SessionUpdateResponse,
 )
 from src.core.tools import generate_error_responses
@@ -43,7 +44,7 @@ class SessionCBV:
 
     @router.get(
         "/{session_id}",
-        response_model=SessionCreateResponse,
+        response_model=SessionFullResponse,
         response_model_exclude_none=False,
         status_code=HTTPStatus.OK,
         summary="Get user session",
@@ -52,7 +53,7 @@ class SessionCBV:
             HTTPStatus.BAD_REQUEST, HTTPStatus.NOT_FOUND
         ),
     )
-    async def get_session(self, session_id: UUID) -> SessionCreateResponse:
+    async def get_session(self, session_id: UUID) -> SessionFullResponse:
         session = await self._session_service.get_session(session_id)
         return SessionDTO.parse_from_db(session)
 
