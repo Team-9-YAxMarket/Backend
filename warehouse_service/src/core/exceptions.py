@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from uuid import UUID
 
 from fastapi.exceptions import HTTPException
 
@@ -10,28 +9,34 @@ class ObjectAlreadyExistsError(HTTPException):
         self.status_code = HTTPStatus.BAD_REQUEST
 
 
-class UserNotFoundError(HTTPException):
-    def __init__(self, user_id: UUID, access_token: UUID | None):
-        self.detail = f"User with ID `{user_id}`"
-        if access_token:
-            self.detail += f" and access token `{access_token}`"
-        self.detail += " not found."
+class SkuNotFoundError(HTTPException):
+    def __init__(self, sku: str):
+        self.detail = f"SKU `{sku}` not found."
         self.status_code = HTTPStatus.NOT_FOUND
 
 
-class RecordNotFoundError(HTTPException):
-    def __init__(self, record_id: UUID, user_id: UUID):
-        self.detail = (
-            f"Record with ID `{record_id}'"
-            f" created by the user ID `{user_id}`"
-            f" not found."
-        )
+class CartonNotFoundError(HTTPException):
+    def __init__(self, carton_type: str):
+        self.detail = f"Carton `{carton_type}` not found."
         self.status_code = HTTPStatus.NOT_FOUND
 
 
-class Mp3ConversionError(HTTPException):
-    def __init__(self, error: bytes):
-        self.detail = (
-            f"Error during mp3 conversion: {error.strip().decode('ascii')}"
-        )
-        self.status_code = HTTPStatus.NOT_FOUND
+#
+#
+#
+# class RecordNotFoundError(HTTPException):
+#     def __init__(self, record_id: UUID, user_id: UUID):
+#         self.detail = (
+#             f"Record with ID `{record_id}'"
+#             f" created by the user ID `{user_id}`"
+#             f" not found."
+#         )
+#         self.status_code = HTTPStatus.NOT_FOUND
+#
+#
+# class Mp3ConversionError(HTTPException):
+#     def __init__(self, error: bytes):
+#         self.detail = (
+#             f"Error during mp3 conversion: {error.strip().decode('ascii')}"
+#         )
+#         self.status_code = HTTPStatus.NOT_FOUND
