@@ -14,7 +14,7 @@ class ItemCreateRequest(BaseModel):
 
 class ItemUpdateRequest(BaseModel):
     sku: str
-    add_packs: List[Optional[str]]
+    add_packs: List[Optional[str]] | None = []
 
 
 class ItemSessionCloseRequest(BaseModel):
