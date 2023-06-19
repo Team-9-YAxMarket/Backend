@@ -1,5 +1,6 @@
 from functools import cache
 from pathlib import Path
+from typing import List
 
 from pydantic import BaseSettings
 
@@ -16,6 +17,7 @@ class Settings(BaseSettings):
     PACKING_APP_DB_PASSWORD: str
     DB_HOST: str
     DB_PORT: int
+    CORS_ORIGINS: List[str] = ["*"]
 
     @property
     def database_url(self) -> str:

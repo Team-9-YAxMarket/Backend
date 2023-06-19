@@ -1,14 +1,11 @@
 from typing import Optional
-from uuid import UUID
 
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
-from src.api.dto.order_dto import OrderDTO
 from src.db.db import get_session
-from src.db.models import Item, Order, RecommendedCarton
+from src.db.models import Order
 from src.repository.abstract_repository import AbstractRepository
 
 
