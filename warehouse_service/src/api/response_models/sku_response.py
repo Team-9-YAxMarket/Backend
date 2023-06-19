@@ -4,14 +4,6 @@ from typing import List
 from pydantic import AnyUrl, BaseModel, PositiveInt
 
 
-class SKUResponseCount(BaseModel):
-    sku: str
-    count: PositiveInt
-
-    class Config:
-        orm_mode = True
-
-
 class SKUResponse(BaseModel):
     status: str
 

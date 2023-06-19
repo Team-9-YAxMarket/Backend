@@ -17,7 +17,7 @@ class SKURequest(BaseModel):
 
 class ItemRequest(BaseModel):
     sku: str
-    count: int
+    count: PositiveInt
 
 
 class OrderRequest(BaseModel):

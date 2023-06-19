@@ -21,4 +21,3 @@ class Order:
     orderId: Optional[str]
     items: List[SKU]
     package: Optional[str] = ""
-    status: Optional[str] = ""
