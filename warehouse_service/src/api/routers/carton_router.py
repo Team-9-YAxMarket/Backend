@@ -1,9 +1,8 @@
 from http import HTTPStatus
-from typing import Any, List, Optional, Union
+from typing import Optional
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from fastapi_restful.cbv import cbv
-from pydantic import PositiveInt
 from src.services.carton_service import CartonService
 
 from src.api.response_models.carton_response import CartonResponse
@@ -23,6 +22,5 @@ class CartonCBV:
         summary="Checking presence of Carton",
         response_description=HTTPStatus.OK.phrase,
     )
-    async def check_carton(
-        self, carton_type: str) -> Optional[CartonResponse]:
+    async def check_carton(self, carton_type: str) -> Optional[CartonResponse]:
         return await self.__carton_service.cartons_info(carton_type)
