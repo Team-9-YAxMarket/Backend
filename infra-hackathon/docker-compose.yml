@@ -22,6 +22,27 @@ services:
     volumes:
       - hackathon_html:/app/build/
 
+  ml-service:
+    image: ivr42/hackathon-ml-model:latest
+    container_name: hackathon-ml-service
+    restart: unless-stopped
+    networks:
+      - backend
+      - database
+    env_file: .env
+
+  warehouse-service:
+    image: ivr42/hackathon-warehouse-service:latest
+    container_name: hackathon-warehouse-service
+    restart: unless-stopped
+    networks:
+      - backend
+      - database
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+
   packing-service:
     image: ivr42/hackathon-packing-service:latest
     container_name: hackathon-packing-service
