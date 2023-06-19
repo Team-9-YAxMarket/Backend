@@ -1,3 +1,4 @@
+import os
 import uuid
 from dataclasses import asdict
 from http import HTTPStatus
@@ -25,7 +26,7 @@ async def create_order(order: OrderRequest):
         sku_list.append(sku)
     order_info: Order = Order(str(uuid.uuid4()), sku_list)
 
-    check_skus_url = "http://127.0.0.1:8080/check_skus/status/"
+    check_skus_url = "http://warehouse-service:8080/check_skus/status/"
     skus_request = {
         "items": [
             asdict(
@@ -55,8 +56,7 @@ async def create_order(order: OrderRequest):
         )
 
     # Получаем информацию о товарах из warehouse_service
-    get_sku_info_url = "http://127.0.0.1:8080/check_skus/"
-
+    get_sku_info_url = "http://warehouse-service:8080/check_skus/"
     async with httpx.AsyncClient() as client:
         response = await client.post(get_sku_info_url, json=skus_request)
 
@@ -71,7 +71,7 @@ async def create_order(order: OrderRequest):
             status_code=500, detail="Неполная информация о SKU"
         )
 
-    get_ml_available_url = "http://127.0.0.1:8000/health/"
+    get_ml_available_url = "http://ml-service:8000/health/"
 
     async with httpx.AsyncClient(timeout=10) as client:
         # Проверка доступности сервиса модели
@@ -81,7 +81,7 @@ async def create_order(order: OrderRequest):
         raise HTTPException(
             status_code=response.status_code, detail="Модель недоступна"
         )
-    post_ml_info_url = "http://127.0.0.1:8000/pack/"
+    post_ml_info_url = "http://ml-service:8000/pack/"
     get_ml_info_request = asdict(order_info)
 
     async with httpx.AsyncClient(timeout=10) as client:
@@ -90,8 +90,7 @@ async def create_order(order: OrderRequest):
             post_ml_info_url, json=get_ml_info_request
         )
     ml_info = response.json()
-
-    check_carton_url = "http://127.0.0.1:8080/check_carton/"
+    check_carton_url = "http://warehouse-service:8080/check_carton/"
     check_carton_request = ml_info["package"]
 
     async with httpx.AsyncClient() as client:
@@ -104,9 +103,7 @@ async def create_order(order: OrderRequest):
         return {"status": "Not enough carton on warehouse"}
 
     ml_info["carton_barcode"] = response.json()["barcode"]
-    print(ml_info)
-
-    summary_order_url = "http://127.0.0.1:8081/api/v1/order/"
+    summary_order_url = "http://packing-service:8080/api/v1/order/"
 
     async with httpx.AsyncClient() as client:
         # отправляется запрос на создание заказа с обогащенными данными
